@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Config;
 
+// classe qui crée une seule connexion à la base de données et la réutilise partout
+// dans le projet
+// et lit les information de connexion depuis le fichier .env
 use App\Support\Env;
 use PDO;
 use PDOException;
@@ -47,7 +50,7 @@ final class Database
 
         return self::$instance;
     }
-    
+
     public static function reset(): void
     {
         self::$instance = null;
