@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+// classe qui sert à charger le fichier .env et à rendre ses variables accessibles dans l'apk
+
 final class Env
 {
     private static bool $loaded = false;
