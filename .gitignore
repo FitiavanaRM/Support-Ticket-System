@@ -1,0 +1,13 @@
+/vendor/
+/node_modules/
+.env
+.env.*
+!.env.example
+storage/logs/*.log
+!storage/logs/.gitkeep
+.DS_Store
+Thumbs.db
+composer.lock
+.phpunit.result.cache
+.idea/
+.vscode/
