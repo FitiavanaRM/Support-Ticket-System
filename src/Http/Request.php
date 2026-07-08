@@ -68,26 +68,25 @@ final class Request
         return array_merge($this->query, $this->body);
     }
 
+    // retourne l'info
     public function server(string $key, mixed $default = null): mixed
     {
         return $this->server[$key] ?? $default;
     }
 
+    // Verification
     public function isMethod(string $method): bool
     {
         return $this->method === strtoupper($method);
     }
 
+    // Enregistre les paramètres récupérés dans l'URL
     public function setRouteParams(array $params): void
     {
         $this->routeParams = $params;
     }
 
-    public function routeParam(string $key, mixed $default = null): mixed
-    {
-        return $this->routeParams[$key] ?? $default;
-    }
-
+     // Retourne un paramètre de la route
     public function routeParam(string $key, mixed $default = null): mixed
     {
         return $this->routeParams[$key] ?? $default;
