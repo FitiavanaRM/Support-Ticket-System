@@ -36,7 +36,6 @@ final class Env
 
             [$key, $value] = array_map('trim', explode('=', $line, 2));
 
-            // Retire les guillemets englobants eventuels: KEY="valeur"
             $value = trim($value, "\"'");
 
             if (getenv($key) !== false) {
