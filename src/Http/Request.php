@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http;
 
 // La classe Request représente la requête envoyée par le navigateur
+// ou bien recupere ce que le navigateur envoie au server
 final class Request
 {
     /** @param array<string, mixed> $query donnees $_GET
@@ -12,6 +13,7 @@ final class Request
      *  @param array<string, mixed> $server donnees $_SERVER
      *  @param array<string, string> $routeParams parametres extraits de l'URL par le Router
      */
+
     private function __construct(
         private readonly string $method,
         private readonly string $uri,
