@@ -14,6 +14,11 @@ final class ValidationException extends BusinessException
         parent::__construct($message);
     }
 
+    public function httpStatusCode(): int
+    {
+        return 422;
+    }
+    
     protected function defaultMessage(): string
     {
         return 'Les donnees fournies ne sont pas valides.';
