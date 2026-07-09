@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
-// erreur liée à la machine (tickets)
-
 class StateException extends BusinessException
 {
     public function httpStatusCode(): int
