@@ -9,3 +9,6 @@ CREATE TABLE IF NOT EXISTS roles (
     code VARCHAR(20) NOT NULL UNIQUE,
     label VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB;
+
+-- nampesaiko tyh : ENGINE=InnoDB pout garantir une meilleure sécuritz et
+-- coherence des données
