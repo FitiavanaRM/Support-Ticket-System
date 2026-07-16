@@ -8,7 +8,7 @@ class StateException extends BusinessException
 {
     public function httpStatusCode(): int
     {
-        return 422;
+        return 422;   
     }
 
     protected function defaultMessage(): string

@@ -6,6 +6,7 @@ declare(strict_types=1);
 // mamorona router, mandray anle requete
 // traite la requete et gère les erreurs et envoie la réponse au navigateur
 use App\Controllers\HealthController;
+use App\Exceptions\BusinessException;
 use App\Http\Request;
 use App\Http\Response;
 use App\Http\Router;
@@ -53,5 +54,21 @@ try {
         'message' => $debug ? $e->getMessage() : 'Une erreur interne est survenue.',
     ], 500);
 }
+
+try {
+    $response = $router->dispatch(Request::fromGlobals());
+} catch (BusinessException $e) {
+    $response = Response::json([
+        'status' => 'error',
+        'message' => $e->getMessage(),...$e->context(),
+    ], $e->httpStatusCode());
+} catch (\Throwable $e) {
+    $debug = Env::get('APP_DEBUG', false) === true;
+    $response = Response::json([
+        'status' => 'error',
+        'message' => $debug ? $e->getMessage() : 'Une erreur interne est survenue.',
+    ], 500);
+}
+
 
 $response->send();
