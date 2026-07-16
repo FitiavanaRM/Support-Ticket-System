@@ -46,17 +46,6 @@ $router->notFound(function (Request $request): Response {
 
 try {
     $response = $router->dispatch(Request::fromGlobals());
-} catch (\Throwable $e) {
-    $debug = Env::get('APP_DEBUG', false) === true;
-
-    $response = Response::json([
-        'status' => 'error',
-        'message' => $debug ? $e->getMessage() : 'Une erreur interne est survenue.',
-    ], 500);
-}
-
-try {
-    $response = $router->dispatch(Request::fromGlobals());
 } catch (BusinessException $e) {
     $response = Response::json([
         'status' => 'error',
