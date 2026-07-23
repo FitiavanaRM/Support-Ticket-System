@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
-//  classe pour gerer les erreurs
+// Classe racine des erreurs métier exposables au client HTTP.
 use Exception;
 use Throwable;
 
