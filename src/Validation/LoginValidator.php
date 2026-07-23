@@ -6,25 +6,20 @@ namespace App\Validation;
 
 use App\Exceptions\ValidationException;
 
-// Valide les données de connexion.
+/** Valide la forme de la connexion avant toute consultation de la base. */
 final class LoginValidator
 {
     public function validate(array $data): void
     {
-        $errors = [];
         $email = trim((string) ($data['email'] ?? ''));
         $password = (string) ($data['password'] ?? '');
 
         if ($email === '') {
-            $errors['email'] = 'L’adresse e-mail est requise.';
+            throw new ValidationException('Données de connexion invalides.', ['email' => 'L’adresse e-mail est requise.']);
         }
 
         if ($password === '') {
-            $errors['password'] = 'Le mot de passe est requis.';
-        }
-
-        if ($errors !== []) {
-            throw new ValidationException('Données de connexion invalides.', $errors);
+            throw new ValidationException('Données de connexion invalides.', ['password' => 'Le mot de passe est requis.']);
         }
     }
 }
