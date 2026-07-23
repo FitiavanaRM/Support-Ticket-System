@@ -21,10 +21,10 @@ final class User
     {
         return new self(
             id: (int)$row['id'],
-            name: (string)$row['name'],
+            name: (string)$row['full_name'],
             email: (string)$row['email'],
             passwordHash: (string)$row['password_hash'],
-            role: (string)$row['role'],
+            role: (string)$row['role_code'],
             isActive: (bool)$row['is_active'],
         );
     }
@@ -47,6 +47,11 @@ final class User
     public function verifyPassword(string $password): bool
     {
         return password_verify($password, $this->passwordHash);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
     }
 
     public function toArray(): array
