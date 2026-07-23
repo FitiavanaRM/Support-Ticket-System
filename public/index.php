@@ -11,7 +11,9 @@ use App\Exceptions\BusinessException;
 use App\Http\Request;
 use App\Http\Response;
 use App\Http\Router;
+use App\Middleware\AuthMiddleware;
 use App\Support\Env;
+use App\Support\Session;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -40,7 +42,11 @@ $router->get('/health/database', [HealthController::class, 'database']);
 $router->post('/register', [AuthController::class, 'register']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->post('/logout', [AuthController::class, 'logout']);
-$router->get('/me', [AuthController::class, 'me']);
+$router->get('/me', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+
+    return (new AuthController())->me($request);
+});
 
 $router->notFound(function (Request $request): Response {
     return Response::json([
