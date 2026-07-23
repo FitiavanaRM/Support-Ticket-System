@@ -6,6 +6,7 @@ declare(strict_types=1);
 // mamorona router, mandray anle requete
 // traite la requete et gère les erreurs et envoie la réponse au navigateur
 use App\Controllers\HealthController;
+use App\Controllers\AuthController;
 use App\Exceptions\BusinessException;
 use App\Http\Request;
 use App\Http\Response;
@@ -36,6 +37,10 @@ $router = new Router();
 $router->get('/', [HealthController::class, 'index']);
 $router->get('/health', [HealthController::class, 'index']);
 $router->get('/health/database', [HealthController::class, 'database']);
+$router->post('/register', [AuthController::class, 'register']);
+$router->post('/login', [AuthController::class, 'login']);
+$router->post('/logout', [AuthController::class, 'logout']);
+$router->get('/me', [AuthController::class, 'me']);
 
 $router->notFound(function (Request $request): Response {
     return Response::json([
