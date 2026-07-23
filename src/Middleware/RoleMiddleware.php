@@ -10,10 +10,7 @@ use App\Http\Request;
 use App\Interfaces\Repositories\UserRepositoryInterface;
 use App\Support\Session;
 
-/**
- * Recharge l'utilisateur au moment de la requête afin qu'une désactivation ou
- * un changement de rôle prenne effet sans attendre la fin de sa session.
- */
+// recharge l'utilisateur 
 final class RoleMiddleware
 {
     /** @param list<string> $allowedRoles */

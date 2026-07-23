@@ -8,10 +8,7 @@ use App\Exceptions\AuthenticationException;
 use App\Http\Request;
 use App\Support\Session;
 
-/**
- * Coupe la requête avant le contrôleur afin que les actions protégées ne
- * puissent jamais dépendre d'un contrôle d'authentification oublié.
- */
+// coupe la requete avant controleur
 final class AuthMiddleware
 {
     public function __construct(private readonly Session $session)

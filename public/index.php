@@ -42,9 +42,9 @@ $router->get('/health/database', [HealthController::class, 'database']);
 $router->post('/register', [AuthController::class, 'register']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->post('/logout', [AuthController::class, 'logout']);
+
 $router->get('/me', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
-
     return (new AuthController())->me($request);
 });
 
@@ -66,9 +66,8 @@ try {
     $debug = Env::get('APP_DEBUG', false) === true;
     $response = Response::json([
         'status' => 'error',
-        'message' => $debug ? $e->getMessage() : 'Une erreur interne est survenue.',
+        'message' => $debug ? $e->getMessage() : 'Une erreur interne est survenue',
     ], 500);
 }
-
 
 $response->send();
