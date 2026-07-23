@@ -11,5 +11,10 @@ interface UserRepositoryInterface
     public function findById(int $id): ?User;
     public function findByEmail(string $email): ?User;
     public function emailExists(string $email): bool;
-    public function create(User $user): void;
+    public function create(
+        string $fullName,
+        string $email,
+        string $passwordHash,
+        string $roleCode,
+    ): User;
 }
