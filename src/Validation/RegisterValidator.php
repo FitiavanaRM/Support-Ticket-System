@@ -6,38 +6,37 @@ namespace App\Validation;
 
 use App\Exceptions\ValidationException;
 
-// Valide les données d'inscription avant création d'un compte
-
+/** Valide l'inscription sans accumuler d'erreurs indépendantes. */
 final class RegisterValidator
 {
     public function validate(array $data): void
     {
-        $errors = [];
-
         $fullName = trim((string) ($data['full_name'] ?? ''));
         $email = trim((string) ($data['email'] ?? ''));
         $password = (string) ($data['password'] ?? '');
 
         if ($fullName === '') {
-            $errors['full_name'] = 'Le nom complet est requis.';
-        } elseif (str_contains($fullName, ' ') === false) {
-            $errors['full_name'] = 'Veuillez indiquer votre nom complet.';
+            throw new ValidationException('Données d’inscription invalides.', ['full_name' => 'Le nom complet est requis.']);
+        }
+
+        if (str_contains($fullName, ' ') === false) {
+            throw new ValidationException('Données d’inscription invalides.', ['full_name' => 'Veuillez indiquer votre nom complet.']);
         }
 
         if ($email === '') {
-            $errors['email'] = 'L’adresse e-mail est requise.';
-        } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            $errors['email'] = 'L’adresse e-mail n’est pas valide.';
+            throw new ValidationException('Données d’inscription invalides.', ['email' => 'L’adresse e-mail est requise.']);
+        }
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new ValidationException('Données d’inscription invalides.', ['email' => 'L’adresse e-mail n’est pas valide.']);
         }
 
         if ($password === '') {
-            $errors['password'] = 'Le mot de passe est requis.';
-        } elseif (mb_strlen($password) < 8) {
-            $errors['password'] = 'Le mot de passe doit contenir au moins 8 caractères.';
+            throw new ValidationException('Données d’inscription invalides.', ['password' => 'Le mot de passe est requis.']);
         }
 
-        if ($errors !== []) {
-            throw new ValidationException('Données d inscription invalides.', $errors);
+        if (mb_strlen($password) < 8) {
+            throw new ValidationException('Données d’inscription invalides.', ['password' => 'Le mot de passe doit contenir au moins 8 caractères.']);
         }
     }
 }
