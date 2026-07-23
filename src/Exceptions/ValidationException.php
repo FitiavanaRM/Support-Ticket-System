@@ -8,8 +8,8 @@ final class ValidationException extends BusinessException
 {
     /** @param array<string, string> $errors cle = nom du champ, valeur = message d'erreur */
     public function __construct(
-        private readonly array $errors,
         string $message = '',
+        private readonly array $errors = [],
     ) {
         parent::__construct($message);
     }
