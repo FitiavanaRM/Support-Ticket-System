@@ -16,7 +16,7 @@ use App\Services\TicketService;
 use App\Support\Session;
 use App\Validation\TicketValidator;
 
-/** Adaptateur HTTP des fonctionnalités accessibles aux clients. */
+// Adaptateur HTTP des fonctionnalités accessibles aux clients
 final class TicketController
 {
     public function index(Request $request): Response
