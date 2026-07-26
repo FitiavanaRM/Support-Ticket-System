@@ -10,7 +10,7 @@ use App\Models\Ticket;
 use App\Repositories\TicketRepository;
 use App\Validation\TicketValidator;
 
-/** Coordonne les cas d'utilisation liés à la création et à la consultation des tickets. */
+// Coordonne les cas d'utilisation liés à la création et à la consultation des tickets
 final class TicketService
 {
     public function __construct(

@@ -9,7 +9,7 @@ use App\Models\Ticket;
 use PDO;
 use RuntimeException;
 
-/** Implémentation PDO du dépôt des tickets. */
+// Implémentation PDO du dépôt des tickets
 final class TicketRepository
 {
     private PDO $pdo;

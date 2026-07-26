@@ -6,7 +6,7 @@ namespace App\Factories;
 
 use App\Models\Ticket;
 
-/** Construit les nouveaux tickets après validation de leurs données. */
+// creer un nouveau factory du ticket
 final class TicketFactory
 {
     /**
