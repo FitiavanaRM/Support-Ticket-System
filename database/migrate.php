@@ -27,6 +27,9 @@ try {
     exit(1);
 }
 
+// La base doit exister avant de pouvoir y créer la table de suivi des migrations.
+$pdo->exec("CREATE DATABASE IF NOT EXISTS `{$dbname}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+
 $pdo->exec("
     CREATE TABLE IF NOT EXISTS `{$dbname}`.`migrations` (
         id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
