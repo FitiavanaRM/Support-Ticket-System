@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Exceptions\AuthenticationException;
+use App\Exceptions\AuthorizationException;
+use App\Exceptions\TicketNotFoundException;
 use App\Exceptions\ValidationException;
 use App\Http\Request;
 use App\Http\Response;
 use App\Models\Message;
 use App\Repositories\MessageRepository;
+use App\Repositories\TicketRepository;
 use App\Services\MessageService;
 use App\Support\Session;
 
@@ -26,6 +29,8 @@ final class MessageController
     public function index(Request $request, string $ticketId): Response
     {
         $validTicketId = $this->validTicketId($ticketId);
+        $this->assertTicketAccess($validTicketId);
+
         $messages = $this->messageService()->listForTicket($validTicketId);
 
         return Response::json([
@@ -40,6 +45,8 @@ final class MessageController
     public function store(Request $request, string $ticketId): Response
     {
         $validTicketId = $this->validTicketId($ticketId);
+        $this->assertTicketAccess($validTicketId);
+
         $content = $request->input('content');
 
         $message = $this->messageService()->createForTicket(
@@ -59,6 +66,23 @@ final class MessageController
         return new MessageService(
             new MessageRepository(),
         );
+    }
+
+    private function assertTicketAccess(int $ticketId): void
+    {
+        $ticket = (new TicketRepository())->findById($ticketId);
+
+        if ($ticket === null) {
+            throw new TicketNotFoundException($ticketId);
+        }
+
+        $currentUserId = $this->authenticatedUserId();
+        $isOwner = $ticket->clientId() === $currentUserId;
+        $isAssignedAgent = $ticket->agentId() !== null && $ticket->agentId() === $currentUserId;
+
+        if (!$isOwner && !$isAssignedAgent) {
+            throw new AuthorizationException();
+        }
     }
 
     private function authenticatedUserId(): int
