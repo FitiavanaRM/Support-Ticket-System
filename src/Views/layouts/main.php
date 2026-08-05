@@ -26,22 +26,27 @@ declare(strict_types=1);
         <?= $content ?? '' ?>
     <?php else: ?>
         <div class="wrapper d-flex min-vh-100 bg-body">
-            <aside class="sidebar bg-dark text-light d-none d-lg-flex flex-column p-3">
+            <aside id="sidebar" class="sidebar bg-dark text-light d-none d-lg-flex flex-column p-3">
                 <a href="/" class="d-flex align-items-center mb-4 text-decoration-none text-light">
                     <span class="fs-4 fw-bold">Support Tickets</span>
                 </a>
                 <nav class="nav flex-column gap-2">
-                    <a href="/" class="nav-link text-light px-3 py-2 rounded">Tableau de bord</a>
-                    <a href="/tickets" class="nav-link text-light px-3 py-2 rounded">Tickets</a>
-                    <a href="/users" class="nav-link text-light px-3 py-2 rounded">Utilisateurs</a>
-                    <a href="/assignment-settings" class="nav-link text-light px-3 py-2 rounded">Assignation</a>
+                    <a href="/" class="sidebar__link nav-link text-light px-3 py-2 rounded">Tableau de bord</a>
+                    <a href="/tickets" class="sidebar__link nav-link text-light px-3 py-2 rounded">Tickets</a>
+                    <a href="/users" class="sidebar__link nav-link text-light px-3 py-2 rounded">Utilisateurs</a>
+                    <a href="/assignment-settings" class="sidebar__link nav-link text-light px-3 py-2 rounded">Assignation</a>
                 </nav>
                 <div class="mt-auto pt-4 small text-secondary">
                     <div class="mb-2">Mode d'affichage</div>
-                    <button type="button" class="btn btn-outline-light btn-sm w-100" id="themeToggle">Clair / Sombre</button>
+                    <button type="button" class="btn btn-outline-light btn-sm w-100 d-flex align-items-center justify-content-center gap-2" id="themeToggle">
+                        <i id="themeIconDark" class="bi bi-moon-fill"></i>
+                        <i id="themeIconLight" class="bi bi-sun-fill d-none"></i>
+                        <span>Clair / Sombre</span>
+                    </button>
                 </div>
             </aside>
 
+            <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
             <main class="flex-grow-1">
             <header class="topbar d-flex justify-content-between align-items-center px-3 py-3 border-bottom bg-body">
                 <div class="d-flex align-items-center gap-3">
