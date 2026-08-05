@@ -59,6 +59,52 @@ final class TicketController
         ]);
     }
 
+    public function updateStatus(Request $request, string $ticketId): Response
+    {
+        $ticket = $this->ticketService()->findOrFail($this->validTicketId($ticketId));
+
+        if ($ticket->clientId() !== $this->authenticatedUserId()) {
+            throw new AuthorizationException();
+        }
+
+        $status = trim((string) ($request->input('status') ?? ''));
+        if ($status === '') {
+            throw new ValidationException('Données de ticket invalides.', [
+                'status' => 'Le statut est requis.',
+            ]);
+        }
+
+        $updatedTicket = $this->ticketService()->transitionStatus($ticket->id() ?? 0, $status);
+
+        return Response::json([
+            'status' => 'success',
+            'data' => $updatedTicket->toArray(),
+        ]);
+    }
+
+    public function assign(Request $request, string $ticketId): Response
+    {
+        $ticket = $this->ticketService()->findOrFail($this->validTicketId($ticketId));
+
+        if ($ticket->clientId() !== $this->authenticatedUserId()) {
+            throw new AuthorizationException();
+        }
+
+        $agentId = $request->input('agent_id');
+        if (!is_numeric($agentId) || (int) $agentId < 1) {
+            throw new ValidationException('Assignation invalide.', [
+                'agent_id' => 'L’identifiant de l’agent est requis.',
+            ]);
+        }
+
+        $updatedTicket = $this->ticketService()->assignToAgent($ticket->id() ?? 0, (int) $agentId);
+
+        return Response::json([
+            'status' => 'success',
+            'data' => $updatedTicket->toArray(),
+        ]);
+    }
+
     private function authenticatedUserId(): int
     {
         $userId = (new Session())->userId();

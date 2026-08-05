@@ -7,11 +7,15 @@ declare(strict_types=1);
 // traite la requete et gère les erreurs et envoie la réponse au navigateur
 use App\Controllers\HealthController;
 use App\Controllers\AuthController;
+use App\Controllers\TicketController;
+use App\Controllers\UserController;
 use App\Exceptions\BusinessException;
 use App\Http\Request;
 use App\Http\Response;
 use App\Http\Router;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\RoleMiddleware;
+use App\Repositories\UserRepository;
 use App\Support\Env;
 use App\Support\Session;
 
@@ -43,9 +47,40 @@ $router->post('/register', [AuthController::class, 'register']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->post('/logout', [AuthController::class, 'logout']);
 
+$router->post('/tickets', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return (new TicketController())->create($request);
+});
+
 $router->get('/me', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
     return (new AuthController())->me($request);
+});
+
+$router->get('/tickets', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return (new TicketController())->index($request);
+});
+
+$router->get('/tickets/{id}', function (Request $request, string $id): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return (new TicketController())->show($request, $id);
+});
+
+$router->patch('/tickets/{id}/status', function (Request $request, string $id): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return (new TicketController())->updateStatus($request, $id);
+});
+
+$router->patch('/tickets/{id}/assign', function (Request $request, string $id): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return (new TicketController())->assign($request, $id);
+});
+
+$router->get('/users/agents', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+    return (new UserController())->agents($request);
 });
 
 $router->notFound(function (Request $request): Response {

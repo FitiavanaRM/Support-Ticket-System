@@ -37,4 +37,10 @@ final class RoleMiddleware
             throw new AuthorizationException();
         }
     }
+
+    /** @return list<string> */
+    public function allowedRoles(): array
+    {
+        return $this->allowedRoles;
+    }
 }

@@ -11,6 +11,8 @@ interface UserRepositoryInterface
     public function findById(int $id): ?User;
     public function findByEmail(string $email): ?User;
     public function emailExists(string $email): bool;
+    /** @return list<int> */
+    public function findAgentIds(): array;
     public function create(
         string $fullName,
         string $email,

@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Config\Database;
 use App\Models\Ticket;
+use InvalidArgumentException;
 use PDO;
 use RuntimeException;
 
@@ -50,6 +51,56 @@ final class TicketRepository
         $row = $statement->fetch();
 
         return $row === false ? null : Ticket::fromDatabaseRow($row);
+    }
+
+    public function updateStatus(int $ticketId, string $status): Ticket
+    {
+        $allowedStatuses = [
+            Ticket::STATUS_OPEN,
+            Ticket::STATUS_ASSIGNED,
+            Ticket::STATUS_IN_PROGRESS,
+            Ticket::STATUS_RESOLVED,
+            Ticket::STATUS_CLOSED,
+        ];
+
+        if (!in_array($status, $allowedStatuses, true)) {
+            throw new InvalidArgumentException("Statut de ticket invalide : {$status}");
+        }
+
+        $statement = $this->pdo->prepare(
+            'UPDATE tickets SET status = :status, updated_at = NOW() WHERE id = :id'
+        );
+        $statement->execute([
+            'status' => $status,
+            'id' => $ticketId,
+        ]);
+
+        $updatedTicket = $this->findById($ticketId);
+        if ($updatedTicket === null) {
+            throw new RuntimeException('Le ticket mis à jour est introuvable.');
+        }
+
+        return $updatedTicket;
+    }
+
+    public function assignAgent(int $ticketId, int $agentId, string $status = Ticket::STATUS_ASSIGNED): Ticket
+    {
+        $statement = $this->pdo->prepare(
+            'UPDATE tickets SET agent_id = :agent_id, status = :status, updated_at = NOW() WHERE id = :id'
+        );
+
+        $statement->execute([
+            'agent_id' => $agentId,
+            'status' => $status,
+            'id' => $ticketId,
+        ]);
+
+        $updatedTicket = $this->findById($ticketId);
+        if ($updatedTicket === null) {
+            throw new RuntimeException('Le ticket affecté est introuvable.');
+        }
+
+        return $updatedTicket;
     }
 
     /** @return list<Ticket> */
