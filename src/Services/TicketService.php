@@ -7,11 +7,11 @@ namespace App\Services;
 use App\Exceptions\TicketNotFoundException;
 use App\Exceptions\ValidationException;
 use App\Factories\TicketFactory;
+use App\Interfaces\Repositories\TicketRepositoryInterface;
 use App\Models\Ticket;
 use App\Observers\LogginObserver;
 use App\Observers\NotificationObserver;
 use App\Repositories\NotificationRepository;
-use App\Repositories\TicketRepository;
 use App\Repositories\UserRepository;
 use App\Services\AssignmentService;
 use App\States\TicketState;
@@ -21,7 +21,7 @@ use App\Validation\TicketValidator;
 final class TicketService
 {
     public function __construct(
-        private readonly TicketRepository $ticketRepository,
+        private readonly TicketRepositoryInterface $ticketRepository,
         private readonly TicketFactory $ticketFactory,
         private readonly TicketValidator $ticketValidator,
     ) {

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Config\Database;
+use App\Interfaces\Repositories\TicketRepositoryInterface;
 use App\Models\Ticket;
 use InvalidArgumentException;
 use PDO;
 use RuntimeException;
 
 // Implémentation PDO du dépôt des tickets
-final class TicketRepository
+final class TicketRepository implements TicketRepositoryInterface
 {
     private PDO $pdo;
 
