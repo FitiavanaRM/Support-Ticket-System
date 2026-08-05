@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Config\Database;
+use App\Interfaces\Repositories\NotificationRepositoryInterface;
 use App\Models\Notification;
 use PDO;
 use RuntimeException;
 
-final class NotificationRepository
+final class NotificationRepository implements NotificationRepositoryInterface
 {
     private PDO $pdo;
 

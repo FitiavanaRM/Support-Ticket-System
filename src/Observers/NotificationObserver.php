@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Factories\NotificationFactory;
-use App\Repositories\NotificationRepository;
+use App\Interfaces\Repositories\NotificationRepositoryInterface;
 
 final class NotificationObserver
 {
     public function __construct(
-        private readonly NotificationRepository $notificationRepository,
+        private readonly NotificationRepositoryInterface $notificationRepository,
         private readonly NotificationFactory $notificationFactory,
     ) {
     }
