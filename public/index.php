@@ -8,6 +8,7 @@ declare(strict_types=1);
 use App\Controllers\AssignmentSettingsController;
 use App\Controllers\HealthController;
 use App\Controllers\AuthController;
+use App\Controllers\MessageController;
 use App\Controllers\TicketController;
 use App\Controllers\UserController;
 use App\Exceptions\BusinessException;
@@ -76,6 +77,16 @@ $router->patch('/tickets/{id}/status', function (Request $request, string $id): 
 $router->patch('/tickets/{id}/assign', function (Request $request, string $id): Response {
     (new AuthMiddleware(new Session()))->handle($request);
     return (new TicketController())->assign($request, $id);
+});
+
+$router->get('/tickets/{id}/messages', function (Request $request, string $id): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return (new MessageController())->index($request, $id);
+});
+
+$router->post('/tickets/{id}/messages', function (Request $request, string $id): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return (new MessageController())->store($request, $id);
 });
 
 $router->get('/users/agents', function (Request $request): Response {
