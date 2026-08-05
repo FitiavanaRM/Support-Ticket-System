@@ -5,6 +5,7 @@ declare(strict_types=1);
 // charge la configuration, demarre la session
 // mamorona router, mandray anle requete
 // traite la requete et gère les erreurs et envoie la réponse au navigateur
+use App\Controllers\AssignmentSettingsController;
 use App\Controllers\HealthController;
 use App\Controllers\AuthController;
 use App\Controllers\TicketController;
@@ -81,6 +82,18 @@ $router->get('/users/agents', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
     (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
     return (new UserController())->agents($request);
+});
+
+$router->get('/assignment-settings', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+    return (new AssignmentSettingsController())->index($request);
+});
+
+$router->patch('/assignment-settings', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+    return (new AssignmentSettingsController())->update($request);
 });
 
 $router->notFound(function (Request $request): Response {
