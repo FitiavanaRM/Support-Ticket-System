@@ -9,6 +9,7 @@ use App\Http\Request;
 use App\Http\Response;
 use App\Repositories\AssignmentSettingsRepository;
 use App\Services\AssignmentSettingsService;
+use App\Support\View;
 
 // Contrôleur HTTP pour la configuration de l'assignation des tickets.
 // Il relie la couche web aux services métier et garde la logique de validation
@@ -27,20 +28,39 @@ final class AssignmentSettingsController
 
     public function update(Request $request): Response
     {
-        $strategyCode = trim((string) ($request->input('strategy_code') ?? ''));
+        try {
+            $strategyCode = trim((string) ($request->input('strategy_code') ?? ''));
 
-        if ($strategyCode === '') {
-            throw new ValidationException('Données invalides.', [
-                'strategy_code' => 'La stratégie d’assignation est requise.',
+            if ($strategyCode === '') {
+                throw new ValidationException('Données invalides.', [
+                    'strategy_code' => 'La stratégie d’assignation est requise.',
+                ]);
+            }
+
+            $settings = $this->assignmentSettingsService()->setStrategy($strategyCode);
+
+            if ($request->acceptsHtml()) {
+                return Response::redirect('/assignment-settings');
+            }
+
+            return Response::json([
+                'status' => 'success',
+                'data' => $settings->toArray(),
             ]);
+        } catch (ValidationException $exception) {
+            if ($request->acceptsHtml()) {
+                return Response::html(View::render(__DIR__ . '/../Views/settings/index.php', [
+                    'errors' => array_values($exception->context()),
+                    'old' => ['strategy_code' => $request->input('strategy_code')],
+                ]));
+            }
+
+            return Response::json([
+                'status' => 'error',
+                'message' => $exception->getMessage(),
+                ...$exception->context(),
+            ], $exception->httpStatusCode());
         }
-
-        $settings = $this->assignmentSettingsService()->setStrategy($strategyCode);
-
-        return Response::json([
-            'status' => 'success',
-            'data' => $settings->toArray(),
-        ]);
     }
 
     private function assignmentSettingsService(): AssignmentSettingsService

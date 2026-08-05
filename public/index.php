@@ -12,6 +12,7 @@ use App\Controllers\MessageController;
 use App\Controllers\TicketController;
 use App\Controllers\UserController;
 use App\Exceptions\AuthenticationException;
+use App\Exceptions\AuthorizationException;
 use App\Exceptions\BusinessException;
 use App\Http\Request;
 use App\Http\Response;
@@ -138,6 +139,12 @@ $router->get('/assignment-settings', function (Request $request): Response {
     return (new AssignmentSettingsController())->index($request);
 });
 
+$router->post('/assignment-settings', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+    return (new AssignmentSettingsController())->update($request);
+});
+
 $router->patch('/assignment-settings', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
     (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
@@ -164,10 +171,25 @@ try {
         ], $e->httpStatusCode());
     }
 } catch (BusinessException $e) {
-    $response = Response::json([
-        'status' => 'error',
-        'message' => $e->getMessage(),...$e->context(),
-    ], $e->httpStatusCode());
+    $request = Request::fromGlobals();
+
+    if ($request->acceptsHtml()) {
+        if ($e instanceof AuthorizationException) {
+            $response = Response::html(View::render(__DIR__ . '/../src/Views/errors/forbidden.php', [
+                'message' => $e->getMessage(),
+            ]), $e->httpStatusCode());
+        } else {
+            $response = Response::html(View::render(__DIR__ . '/../src/Views/errors/error.php', [
+                'message' => $e->getMessage(),
+                'status' => $e->httpStatusCode(),
+            ]), $e->httpStatusCode());
+        }
+    } else {
+        $response = Response::json([
+            'status' => 'error',
+            'message' => $e->getMessage(),...$e->context(),
+        ], $e->httpStatusCode());
+    }
 } catch (\Throwable $e) {
     $debug = Env::get('APP_DEBUG', false) === true;
     $response = Response::json([
