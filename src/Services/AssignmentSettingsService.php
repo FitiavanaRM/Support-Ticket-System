@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Interfaces\Repositories\AssignmentSettingsRepositoryInterface;
 use App\Models\AssignmentSettings;
-use App\Repositories\AssignmentSettingsRepository;
 use InvalidArgumentException;
 
 // Service métier qui lit et met à jour la stratégie d'assignation globale.
@@ -14,7 +14,7 @@ use InvalidArgumentException;
 final class AssignmentSettingsService
 {
     public function __construct(
-        private readonly AssignmentSettingsRepository $assignmentSettingsRepository,
+        private readonly AssignmentSettingsRepositoryInterface $assignmentSettingsRepository,
     ) {
     }
 

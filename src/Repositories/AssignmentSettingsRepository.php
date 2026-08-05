@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Config\Database;
+use App\Interfaces\Repositories\AssignmentSettingsRepositoryInterface;
 use App\Models\AssignmentSettings;
 use InvalidArgumentException;
 use PDO;
@@ -17,7 +18,7 @@ use RuntimeException;
  * configuration de lire la stratégie active sans dépendre directement de PDO.
  * Il centralise aussi la mise à jour du dernier agent traité pour le round-robin.
  */
-final class AssignmentSettingsRepository
+final class AssignmentSettingsRepository implements AssignmentSettingsRepositoryInterface
 {
     private PDO $pdo;
 
