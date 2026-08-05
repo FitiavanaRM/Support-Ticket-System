@@ -91,13 +91,17 @@ final class TicketController
         }
 
         $agentId = $request->input('agent_id');
-        if (!is_numeric($agentId) || (int) $agentId < 1) {
-            throw new ValidationException('Assignation invalide.', [
-                'agent_id' => 'L’identifiant de l’agent est requis.',
-            ]);
-        }
+        if ($agentId === null || $agentId === '') {
+            $updatedTicket = $this->ticketService()->autoAssign($ticket->id() ?? 0);
+        } else {
+            if (!is_numeric($agentId) || (int) $agentId < 1) {
+                throw new ValidationException('Assignation invalide.', [
+                    'agent_id' => 'L’identifiant de l’agent est requis.',
+                ]);
+            }
 
-        $updatedTicket = $this->ticketService()->assignToAgent($ticket->id() ?? 0, (int) $agentId);
+            $updatedTicket = $this->ticketService()->assignToAgent($ticket->id() ?? 0, (int) $agentId);
+        }
 
         return Response::json([
             'status' => 'success',

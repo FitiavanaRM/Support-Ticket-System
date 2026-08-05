@@ -11,9 +11,11 @@ use App\Interfaces\Repositories\TicketRepositoryInterface;
 use App\Models\Ticket;
 use App\Observers\LogginObserver;
 use App\Observers\NotificationObserver;
+use App\Repositories\AssignmentSettingsRepository;
 use App\Repositories\NotificationRepository;
 use App\Repositories\UserRepository;
 use App\Services\AssignmentService;
+use App\Services\AssignmentSettingsService;
 use App\States\TicketState;
 use App\Validation\TicketValidator;
 
@@ -90,11 +92,22 @@ final class TicketService
         return $this->ticketRepository->assignAgent($ticketId, $agentId, Ticket::STATUS_ASSIGNED);
     }
 
-    public function autoAssign(int $ticketId, string $strategyCode = 'ROUND_ROBIN', ?int $lastAssignedAgentId = null): Ticket
+    public function autoAssign(int $ticketId, ?string $strategyCode = null, ?int $lastAssignedAgentId = null): Ticket
     {
         $ticket = $this->findOrFail($ticketId);
 
         TicketState::assertTransition($ticket->status(), Ticket::STATUS_ASSIGNED);
+
+        $assignmentSettingsService = new AssignmentSettingsService(
+            new AssignmentSettingsRepository(),
+        );
+
+        $strategyCode = $strategyCode !== null
+            ? $assignmentSettingsService->normalizeStrategyCode($strategyCode)
+            : $assignmentSettingsService->currentStrategyCode();
+
+        $settings = $assignmentSettingsService->current();
+        $lastAssignedAgentId = $lastAssignedAgentId ?? $settings->lastAgentId();
 
         $availableAgents = (new UserRepository())->findAgentIds();
         $agentId = (new AssignmentService())->assign($strategyCode, $availableAgents, $lastAssignedAgentId);
@@ -105,7 +118,13 @@ final class TicketService
             ]);
         }
 
-        return $this->ticketRepository->assignAgent($ticketId, $agentId, Ticket::STATUS_ASSIGNED);
+        $updatedTicket = $this->ticketRepository->assignAgent($ticketId, $agentId, Ticket::STATUS_ASSIGNED);
+
+        if ($strategyCode === 'ROUND_ROBIN' || $strategyCode === 'ROUNDROBIN') {
+            $assignmentSettingsService->updateLastAgent($agentId);
+        }
+
+        return $updatedTicket;
     }
 
     /** @return list<Ticket> */

@@ -11,6 +11,7 @@ use App\Controllers\AuthController;
 use App\Controllers\MessageController;
 use App\Controllers\TicketController;
 use App\Controllers\UserController;
+use App\Exceptions\AuthenticationException;
 use App\Exceptions\BusinessException;
 use App\Http\Request;
 use App\Http\Response;
@@ -20,6 +21,7 @@ use App\Middleware\RoleMiddleware;
 use App\Repositories\UserRepository;
 use App\Support\Env;
 use App\Support\Session;
+use App\Support\View;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -42,7 +44,20 @@ session_start([
 
 $router = new Router();
 
-$router->get('/', [HealthController::class, 'index']);
+$router->get('/', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return Response::html(View::render(__DIR__ . '/../src/Views/dashboard/index.php'));
+});
+$router->get('/dashboard', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    return Response::html(View::render(__DIR__ . '/../src/Views/dashboard/index.php'));
+});
+$router->get('/login', function (Request $request): Response {
+    return Response::html(View::render(__DIR__ . '/../src/Views/auth/login.php'));
+});
+$router->get('/register', function (Request $request): Response {
+    return Response::html(View::render(__DIR__ . '/../src/Views/auth/register.php'));
+});
 $router->get('/health', [HealthController::class, 'index']);
 $router->get('/health/database', [HealthController::class, 'database']);
 $router->post('/register', [AuthController::class, 'register']);
@@ -61,11 +76,21 @@ $router->get('/me', function (Request $request): Response {
 
 $router->get('/tickets', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
+
+    if ($request->acceptsHtml()) {
+        return Response::html(View::render(__DIR__ . '/../src/Views/tickets/index.php'));
+    }
+
     return (new TicketController())->index($request);
 });
 
 $router->get('/tickets/{id}', function (Request $request, string $id): Response {
     (new AuthMiddleware(new Session()))->handle($request);
+
+    if ($request->acceptsHtml()) {
+        return Response::html(View::render(__DIR__ . '/../src/Views/tickets/show.php'));
+    }
+
     return (new TicketController())->show($request, $id);
 });
 
@@ -89,6 +114,13 @@ $router->post('/tickets/{id}/messages', function (Request $request, string $id):
     return (new MessageController())->store($request, $id);
 });
 
+$router->get('/users', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+
+    return Response::html(View::render(__DIR__ . '/../src/Views/users/index.php'));
+});
+
 $router->get('/users/agents', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
     (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
@@ -98,6 +130,11 @@ $router->get('/users/agents', function (Request $request): Response {
 $router->get('/assignment-settings', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
     (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+
+    if ($request->acceptsHtml()) {
+        return Response::html(View::render(__DIR__ . '/../src/Views/settings/index.php'));
+    }
+
     return (new AssignmentSettingsController())->index($request);
 });
 
@@ -116,6 +153,16 @@ $router->notFound(function (Request $request): Response {
 
 try {
     $response = $router->dispatch(Request::fromGlobals());
+} catch (AuthenticationException $e) {
+    $request = Request::fromGlobals();
+    if ($request->acceptsHtml()) {
+        $response = Response::redirect('/login');
+    } else {
+        $response = Response::json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ], $e->httpStatusCode());
+    }
 } catch (BusinessException $e) {
     $response = Response::json([
         'status' => 'error',

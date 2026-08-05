@@ -50,9 +50,11 @@ final class UserRepository implements UserRepositoryInterface
     /** @return list<int> */
     public function findAgentIds(): array
     {
-        $stmt = $this->pdo->query(
-            'SELECT u.id FROM users u INNER JOIN roles r ON r.id = u.role_id WHERE r.code = \"AGENT\" AND u.is_active = 1 ORDER BY u.id ASC'
+        $stmt = $this->pdo->prepare(
+            'SELECT u.id FROM users u INNER JOIN roles r ON r.id = u.role_id WHERE r.code = :role_code AND u.is_active = 1 ORDER BY u.id ASC'
         );
+
+        $stmt->execute(['role_code' => 'AGENT']);
 
         return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN, 0));
     }

@@ -68,13 +68,32 @@ final class TicketRepository implements TicketRepositoryInterface
             throw new InvalidArgumentException("Statut de ticket invalide : {$status}");
         }
 
-        $statement = $this->pdo->prepare(
-            'UPDATE tickets SET status = :status, updated_at = NOW() WHERE id = :id'
-        );
-        $statement->execute([
+        $updates = [
+            'status = :status',
+            'updated_at = NOW()',
+        ];
+        $params = [
             'status' => $status,
             'id' => $ticketId,
-        ]);
+        ];
+
+        if ($status === Ticket::STATUS_RESOLVED) {
+            $updates[] = 'resolved_at = NOW()';
+        }
+
+        if ($status === Ticket::STATUS_CLOSED) {
+            $updates[] = 'closed_at = NOW()';
+        }
+
+        if ($status !== Ticket::STATUS_RESOLVED && $status !== Ticket::STATUS_CLOSED) {
+            $updates[] = 'resolved_at = NULL';
+            $updates[] = 'closed_at = NULL';
+        }
+
+        $statement = $this->pdo->prepare(
+            'UPDATE tickets SET ' . implode(', ', $updates) . ' WHERE id = :id'
+        );
+        $statement->execute($params);
 
         $updatedTicket = $this->findById($ticketId);
         if ($updatedTicket === null) {
@@ -85,7 +104,7 @@ final class TicketRepository implements TicketRepositoryInterface
     }
 
     public function assignAgent(int $ticketId, int $agentId, string $status = Ticket::STATUS_ASSIGNED): Ticket
-    {
+    
         $statement = $this->pdo->prepare(
             'UPDATE tickets SET agent_id = :agent_id, status = :status, updated_at = NOW() WHERE id = :id'
         );

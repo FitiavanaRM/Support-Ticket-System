@@ -54,6 +54,12 @@ final class Request
         return $this->uri;
     }
 
+    public function acceptsHtml(): bool
+    {
+        $acceptHeader = strtolower((string) $this->server('HTTP_ACCEPT', ''));
+        return str_contains($acceptHeader, 'text/html') || str_contains($acceptHeader, '*/*');
+    }
+
     public function query(string $key, mixed $default = null): mixed
     {
         return $this->query[$key] ?? $default;
