@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Config\Database;
+use App\Interfaces\Repositories\MessageRepositoryInterface;
 use App\Models\Message;
 use PDO;
 use RuntimeException;
@@ -12,7 +13,7 @@ use RuntimeException;
 // Dépôt des messages de ticket.
 // Il complète le modèle Message et centralise les opérations sur la table
 // ticket_messages sans mélanger le SQL dans les services ou contrôleurs.
-final class MessageRepository
+final class MessageRepository implements MessageRepositoryInterface
 {
     private PDO $pdo;
 
