@@ -122,10 +122,31 @@ $router->get('/users', function (Request $request): Response {
     return Response::html(View::render(__DIR__ . '/../src/Views/users/index.php'));
 });
 
+$router->get('/users/new', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+
+    return (new App\Controllers\UserController())->createForm($request);
+});
+
+$router->post('/users', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+
+    return (new App\Controllers\UserController())->store($request);
+});
+
 $router->get('/users/agents', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
     (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
     return (new UserController())->agents($request);
+});
+
+$router->get('/users/{id}', function (Request $request, string $id): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+    (new RoleMiddleware(new Session(), new UserRepository(), ['SUPERVISOR', 'ADMIN']))->handle($request);
+
+    return (new App\Controllers\UserController())->show($request, $id);
 });
 
 $router->get('/assignment-settings', function (Request $request): Response {

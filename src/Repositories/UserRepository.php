@@ -59,6 +59,16 @@ final class UserRepository implements UserRepositoryInterface
         return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN, 0));
     }
 
+    /** @return list<User> */
+    public function findAll(): array
+    {
+        $stmt = $this->pdo->prepare($this->baseQuery() . ' ORDER BY u.id ASC');
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        return array_map(static fn (array $row): User => User::fromDatabaseRow($row), $rows);
+    }
+
     public function create(string $fullName, string $email, string $passwordHash, string $roleCode): User
     {
         $roleStmt = $this->pdo->prepare('SELECT id FROM roles WHERE code = :code');

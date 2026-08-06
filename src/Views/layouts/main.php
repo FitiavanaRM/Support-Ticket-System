@@ -12,9 +12,23 @@ declare(strict_types=1);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? 'Support Tickets', ENT_QUOTES, 'UTF-8') ?></title>
+    <script>
+        (function() {
+            try {
+                const savedTheme = window.localStorage.getItem('app-theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+                document.documentElement.dataset.theme = theme;
+                document.documentElement.dataset.bsTheme = theme;
+            } catch (error) {
+                document.documentElement.dataset.theme = 'light';
+                document.documentElement.dataset.bsTheme = 'light';
+            }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Piv4xVNRyMGpqkUU+G6uHBr0tLQmY5eYxQZlSl+ozM1daw5rARpiFb8I2QF91X4+" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/assets/css/app.css">
@@ -26,24 +40,16 @@ declare(strict_types=1);
         <?= $content ?? '' ?>
     <?php else: ?>
         <div class="wrapper d-flex min-vh-100 bg-body">
-            <aside id="sidebar" class="sidebar bg-dark text-light d-none d-lg-flex flex-column p-3">
-                <a href="/" class="d-flex align-items-center mb-4 text-decoration-none text-light">
+            <aside id="sidebar" class="sidebar d-none d-lg-flex flex-column p-3">
+                <a href="/" class="d-flex align-items-center mb-4 text-decoration-none">
                     <span class="fs-4 fw-bold">Support Tickets</span>
                 </a>
                 <nav class="nav flex-column gap-2">
-                    <a href="/" class="sidebar__link nav-link text-light px-3 py-2 rounded">Tableau de bord</a>
-                    <a href="/tickets" class="sidebar__link nav-link text-light px-3 py-2 rounded">Tickets</a>
-                    <a href="/users" class="sidebar__link nav-link text-light px-3 py-2 rounded">Utilisateurs</a>
-                    <a href="/assignment-settings" class="sidebar__link nav-link text-light px-3 py-2 rounded">Assignation</a>
+                    <a href="/" class="sidebar__link nav-link px-3 py-2 rounded">Tableau de bord</a>
+                    <a href="/tickets" class="sidebar__link nav-link px-3 py-2 rounded">Tickets</a>
+                    <a href="/users" class="sidebar__link nav-link px-3 py-2 rounded">Utilisateurs</a>
+                    <a href="/assignment-settings" class="sidebar__link nav-link px-3 py-2 rounded">Assignation</a>
                 </nav>
-                <div class="mt-auto pt-4 small text-secondary">
-                    <div class="mb-2">Mode d'affichage</div>
-                    <button type="button" class="btn btn-outline-light btn-sm w-100 d-flex align-items-center justify-content-center gap-2" id="themeToggle">
-                        <i id="themeIconDark" class="bi bi-moon-fill"></i>
-                        <i id="themeIconLight" class="bi bi-sun-fill d-none"></i>
-                        <span>Clair / Sombre</span>
-                    </button>
-                </div>
             </aside>
 
             <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
@@ -61,6 +67,10 @@ declare(strict_types=1);
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
+                    <button type="button" id="themeToggle" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
+                        <span id="themeToggleIcon" aria-hidden="true">☀️</span>
+                        <span class="d-none d-sm-inline">Thème</span>
+                    </button>
                     <span class="text-muted d-none d-md-inline">Bonjour, utilisateur</span>
                     <form action="/logout" method="post" class="m-0">
                         <button type="submit" class="btn btn-outline-secondary btn-sm">Déconnexion</button>

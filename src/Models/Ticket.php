@@ -34,6 +34,8 @@ final class Ticket
         private readonly int $categoryId,
         private readonly int $priorityId,
         private readonly string $status,
+        private readonly ?string $categoryName = null,
+        private readonly ?string $priorityName = null,
         private readonly ?DateTimeImmutable $createdAt = null,
         private readonly ?DateTimeImmutable $updatedAt = null,
         private readonly ?DateTimeImmutable $resolvedAt = null,
@@ -56,6 +58,8 @@ final class Ticket
             categoryId: (int) $row['category_id'],
             priorityId: (int) $row['priority_id'],
             status: (string) $row['status'],
+            categoryName: isset($row['category_name']) ? (string) $row['category_name'] : null,
+            priorityName: isset($row['priority_name']) ? (string) $row['priority_name'] : null,
             createdAt: self::dateFromRow($row, 'created_at'),
             updatedAt: self::dateFromRow($row, 'updated_at'),
             resolvedAt: self::dateFromRow($row, 'resolved_at'),
@@ -103,6 +107,36 @@ final class Ticket
         return $this->status;
     }
 
+    public function categoryName(): ?string
+    {
+        return $this->categoryName;
+    }
+
+    public function priorityName(): ?string
+    {
+        return $this->priorityName;
+    }
+
+    public function createdAt(): ?DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function updatedAt(): ?DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function resolvedAt(): ?DateTimeImmutable
+    {
+        return $this->resolvedAt;
+    }
+
+    public function closedAt(): ?DateTimeImmutable
+    {
+        return $this->closedAt;
+    }
+
     /** @return array<string, int|string|null> */
     public function toArray(): array
     {
@@ -115,6 +149,8 @@ final class Ticket
             'category_id' => $this->categoryId,
             'priority_id' => $this->priorityId,
             'status' => $this->status,
+            'category_name' => $this->categoryName,
+            'priority_name' => $this->priorityName,
             'created_at' => $this->formatDate($this->createdAt),
             'updated_at' => $this->formatDate($this->updatedAt),
             'resolved_at' => $this->formatDate($this->resolvedAt),

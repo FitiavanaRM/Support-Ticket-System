@@ -29,4 +29,7 @@ interface TicketRepositoryInterface
 
     /** @return list<Ticket> */
     public function findByAgentId(int $agentId): array;
+
+    /** @return list<Ticket> */
+    public function findAll(): array;
 }

@@ -1,31 +1,35 @@
 document.addEventListener('DOMContentLoaded', function () {
     const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeToggleIcon');
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     const sidebar = document.querySelector('.sidebar');
     const html = document.documentElement;
 
-    const savedTheme = window.localStorage.getItem('app-theme') || 'light';
-    html.setAttribute('data-bs-theme', savedTheme === 'dark' ? 'dark' : 'light');
-    document.body.classList.toggle('theme-dark', savedTheme === 'dark');
+    const getSystemTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const savedTheme = window.localStorage.getItem('app-theme');
+    const initialTheme = savedTheme || getSystemTheme();
 
-    const themeIconDark = document.getElementById('themeIconDark');
-    const themeIconLight = document.getElementById('themeIconLight');
+    const setTheme = (theme) => {
+        html.dataset.theme = theme;
+        html.dataset.bsTheme = theme;
+        document.body.classList.toggle('theme-dark', theme === 'dark');
+        if (themeIcon) {
+            themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+        if (themeToggle) {
+            themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Activer le mode clair' : 'Activer le mode sombre');
+        }
+    };
+
+    setTheme(initialTheme);
 
     if (themeToggle) {
-        const updateIcons = (dark) => {
-            if (themeIconDark) themeIconDark.classList.toggle('d-none', dark);
-            if (themeIconLight) themeIconLight.classList.toggle('d-none', !dark);
-        };
-
-        updateIcons(savedTheme === 'dark');
-
         themeToggle.addEventListener('click', function () {
-            const isDark = html.getAttribute('data-bs-theme') === 'dark';
-            html.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
-            document.body.classList.toggle('theme-dark', !isDark);
-            window.localStorage.setItem('app-theme', !isDark ? 'dark' : 'light');
-            updateIcons(!isDark);
+            const currentTheme = html.dataset.theme === 'dark' ? 'dark' : 'light';
+            const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(nextTheme);
+            window.localStorage.setItem('app-theme', nextTheme);
         });
     }
 

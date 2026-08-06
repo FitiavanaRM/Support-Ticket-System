@@ -5,62 +5,41 @@ declare(strict_types=1);
 // Vue de gestion des utilisateurs. Affiche un tableau utilisateur clair et
 // simple avec rôle et statut.
 
-$title = 'Utilisateurs';
-$pageTitle = 'Utilisateurs';
-$pageDescription = 'Liste des agents et administrateurs du système.';
+ $title = 'Utilisateurs';
+ $pageTitle = 'Utilisateurs';
+ $pageDescription = 'Liste des agents et administrateurs du système.';
 
-ob_start();
-?>
-<div class="card p-4">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h5 class="mb-0">Utilisateurs</h5>
-            <p class="text-muted small mb-0">Contrôlez les rôles des membres et consultez leur activité.</p>
-        </div>
-        <button class="btn btn-primary btn-sm">Ajouter un utilisateur</button>
-    </div>
+ $userRepo = new \App\Repositories\UserRepository();
+ $users = $userRepo->findAll();
 
-    <div class="table-responsive">
-        <table class="table align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Email</th>
-                    <th>Rôle</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Rotsy Client</td>
-                    <td>client@demo.test</td>
-                    <td><span class="badge badge-priority-4">CLIENT</span></td>
-                    <td><span class="badge bg-success">Actif</span></td>
-                    <td><button class="btn btn-sm btn-outline-primary">Voir</button></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Nomena Agent</td>
-                    <td>agent@demo.test</td>
-                    <td><span class="badge badge-priority-3">AGENT</span></td>
-                    <td><span class="badge bg-success">Actif</span></td>
-                    <td><button class="btn btn-sm btn-outline-primary">Voir</button></td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Hery Superviseur</td>
-                    <td>superviseur@demo.test</td>
-                    <td><span class="badge badge-priority-2">SUPERVISOR</span></td>
-                    <td><span class="badge bg-success">Actif</span></td>
-                    <td><button class="btn btn-sm btn-outline-primary">Voir</button></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<?php
-$content = ob_get_clean();
-require __DIR__ . '/../layouts/main.php';
+ ob_start();
+ ?>
+ <div class="card activity-card p-3">
+     <div class="d-flex align-items-center justify-content-between mb-3">
+         <div class="d-flex align-items-center gap-2">
+             <i class="bi bi-people fs-4"></i>
+             <h5 class="mb-0">Utilisateurs</h5>
+         </div>
+         <a href="/users/new" class="btn btn-primary btn-sm">Ajouter un utilisateur</a>
+     </div>
+
+     <ul class="list-unstyled activity-list mb-0">
+         <?php foreach ($users as $u): ?>
+             <li class="activity-item d-flex align-items-center justify-content-between py-3">
+                 <div class="d-flex align-items-center gap-3">
+                     <div class="act-icon act-icon--assigned d-flex align-items-center justify-content-center">
+                         <i class="bi bi-person-circle"></i>
+                     </div>
+                     <div class="activity-body">
+                         <div class="activity-title fw-bold"><?= htmlspecialchars($u->name(), ENT_QUOTES, 'UTF-8') ?> <small class="text-muted">(<?= htmlspecialchars($u->toArray()['role'], ENT_QUOTES, 'UTF-8') ?>)</small></div>
+                         <div class="activity-desc text-muted small"><?= htmlspecialchars($u->email(), ENT_QUOTES, 'UTF-8') ?></div>
+                     </div>
+                 </div>
+                 <div class="activity-time text-muted small"><?= $u->isActive() ? 'Actif' : 'Inactif' ?></div>
+             </li>
+         <?php endforeach; ?>
+     </ul>
+ </div>
+ <?php
+ $content = ob_get_clean();
+ require __DIR__ . '/../layouts/main.php';

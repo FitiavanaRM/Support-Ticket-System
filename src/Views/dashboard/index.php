@@ -12,108 +12,131 @@ $pageDescription = 'Vue d’ensemble de vos tickets et de l’activité récente
 ob_start();
 ?>
 <div class="row g-4">
-    <div class="col-12">
-        <div class="row g-3">
-            <div class="col-sm-6 col-xl-3">
-                <div class="card p-4 card-hero">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <h6 class="text-muted mb-1">Tickets ouverts</h6>
-                            <h3 class="mb-0">12</h3>
-                        </div>
-                        <span class="badge badge-status open">Open</span>
+   <div class="col-12">
+        <div class="row g-3 dashboard-stats">
+            <div class="col-12 col-md-6 col-lg-3 stat-col">
+                <div class="stat-card h-100 p-3 d-flex flex-column align-items-center justify-content-center text-center">
+                    <div class="stat-icon bg-total mb-3">
+                        <i class="bi bi-bar-chart-line-fill"></i>
                     </div>
-                    <p class="text-muted small mb-0">Tickets en attente d’interventions.</p>
+                    <div class="stat-number stat-total mb-1">54</div>
+                    <div class="stat-label mb-2">Total tickets</div>
+                    <div class="text-muted small">Total des tickets créés dans le système</div>
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card p-4 card-hero">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <h6 class="text-muted mb-1">Tickets en cours</h6>
-                            <h3 class="mb-0">8</h3>
-                        </div>
-                        <span class="badge badge-status in_progress">En cours</span>
+
+            <div class="col-12 col-md-6 col-lg-3 stat-col">
+                <div class="stat-card h-100 p-3 d-flex flex-column align-items-center justify-content-center text-center">
+                    <div class="stat-icon bg-open mb-3">
+                        <i class="bi bi-envelope-open-fill"></i>
                     </div>
-                    <p class="text-muted small mb-0">Tickets actuellement traités par vos équipes.</p>
+                    <div class="stat-number stat-open mb-1">12</div>
+                    <div class="stat-label mb-2">Tickets ouverts</div>
+                    <div class="text-muted small">Tickets en attente d’intervention</div>
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card p-4 card-hero">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <h6 class="text-muted mb-1">Tickets résolus</h6>
-                            <h3 class="mb-0">26</h3>
-                        </div>
-                        <span class="badge badge-status resolved">Résolu</span>
+
+            <div class="col-12 col-md-6 col-lg-3 stat-col">
+                <div class="stat-card h-100 p-3 d-flex flex-column align-items-center justify-content-center text-center">
+                    <div class="stat-icon bg-progress mb-3">
+                        <i class="bi bi-arrow-repeat"></i>
                     </div>
-                    <p class="text-muted small mb-0">Tickets fermés avec satisfaction.</p>
+                    <div class="stat-number stat-progress mb-1">8</div>
+                    <div class="stat-label mb-2">Tickets en cours</div>
+                    <div class="text-muted small">Tickets actuellement traités</div>
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card p-4 card-hero">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div>
-                            <h6 class="text-muted mb-1">Nouveaux messages</h6>
-                            <h3 class="mb-0">14</h3>
-                        </div>
-                        <span class="badge badge-status assigned">Nouveau</span>
+
+            <div class="col-12 col-md-6 col-lg-3 stat-col">
+                <div class="stat-card h-100 p-3 d-flex flex-column align-items-center justify-content-center text-center">
+                    <div class="stat-icon bg-resolved mb-3">
+                        <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <p class="text-muted small mb-0">Messages récents dans vos tickets actifs.</p>
+                    <div class="stat-number stat-resolved mb-1">26</div>
+                    <div class="stat-label mb-2">Tickets résolus</div>
+                    <div class="text-muted small">Tickets fermés avec satisfaction</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Recent activity - modern card list -->
     <div class="col-12">
-        <div class="card p-4">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <div>
-                    <h5 class="mb-0">Derniers tickets</h5>
-                    <p class="text-muted small mb-0">Suivi des tickets récents créés par vos clients.</p>
+        <div class="card activity-card p-3 animate-fadeInUp">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history fs-4"></i>
+                    <h5 class="mb-0">Activité récente</h5>
                 </div>
                 <a href="/tickets" class="btn btn-outline-secondary btn-sm">Voir tous</a>
             </div>
-            <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Titre</th>
-                            <th>Client</th>
-                            <th>Statut</th>
-                            <th>Priorité</th>
-                            <th>Dernière mise à jour</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Impossible de me connecter</td>
-                            <td>Rotsy Client</td>
-                            <td><span class="badge badge-status open">Open</span></td>
-                            <td><span class="badge badge-priority-2">Haute</span></td>
-                            <td>Il y a 1h</td>
-                            <td><a href="/tickets/1" class="btn btn-sm btn-outline-primary">Voir</a></td>
-                        </tr>
-                        <tr>
-                            <td>Erreur lors de l’envoi d’un message</td>
-                            <td>Marie L.</td>
-                            <td><span class="badge badge-status in_progress">In progress</span></td>
-                            <td><span class="badge badge-priority-3">Moyenne</span></td>
-                            <td>Il y a 3h</td>
-                            <td><a href="/tickets/2" class="btn btn-sm btn-outline-primary">Voir</a></td>
-                        </tr>
-                        <tr>
-                            <td>Demande de changement de mot de passe</td>
-                            <td>Paul T.</td>
-                            <td><span class="badge badge-status resolved">Resolved</span></td>
-                            <td><span class="badge badge-priority-4">Basse</span></td>
-                            <td>Hier</td>
-                            <td><a href="/tickets/3" class="btn btn-sm btn-outline-primary">Voir</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
+            <ul class="list-unstyled activity-list mb-0">
+                <li class="activity-item d-flex align-items-center justify-content-between py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="act-icon act-icon--created d-flex align-items-center justify-content-center">
+                            <i class="bi bi-plus-circle-fill"></i>
+                        </div>
+                        <div class="activity-body">
+                            <div class="activity-title fw-bold">Ticket créé: Impossible de me connecter</div>
+                            <div class="activity-desc text-muted small">Nouvel utilisateur signalé une impossibilité de connexion.</div>
+                        </div>
+                    </div>
+                    <div class="activity-time text-muted small">Il y a 1h</div>
+                </li>
+
+                <li class="activity-item d-flex align-items-center justify-content-between py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="act-icon act-icon--assigned d-flex align-items-center justify-content-center">
+                            <i class="bi bi-person-badge-fill"></i>
+                        </div>
+                        <div class="activity-body">
+                            <div class="activity-title fw-bold">Ticket assigné: Erreur d’envoi</div>
+                            <div class="activity-desc text-muted small">Le ticket a été assigné à Marie.</div>
+                        </div>
+                    </div>
+                    <div class="activity-time text-muted small">Il y a 3h</div>
+                </li>
+
+                <li class="activity-item d-flex align-items-center justify-content-between py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="act-icon act-icon--message d-flex align-items-center justify-content-center">
+                            <i class="bi bi-chat-dots-fill"></i>
+                        </div>
+                        <div class="activity-body">
+                            <div class="activity-title fw-bold">Message ajouté: Demande de précision</div>
+                            <div class="activity-desc text-muted small">Le client a ajouté un message au ticket.</div>
+                        </div>
+                    </div>
+                    <div class="activity-time text-muted small">Il y a 4h</div>
+                </li>
+
+                <li class="activity-item d-flex align-items-center justify-content-between py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="act-icon act-icon--resolved d-flex align-items-center justify-content-center">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div class="activity-body">
+                            <div class="activity-title fw-bold">Ticket résolu: Mot de passe réinitialisé</div>
+                            <div class="activity-desc text-muted small">Le ticket a été résolu et clôturé.</div>
+                        </div>
+                    </div>
+                    <div class="activity-time text-muted small">Hier</div>
+                </li>
+
+                <li class="activity-item d-flex align-items-center justify-content-between py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="act-icon act-icon--closed d-flex align-items-center justify-content-center">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </div>
+                        <div class="activity-body">
+                            <div class="activity-title fw-bold">Ticket fermé: Problème non reproductible</div>
+                            <div class="activity-desc text-muted small">Fermeture du ticket après investigation.</div>
+                        </div>
+                    </div>
+                    <div class="activity-time text-muted small">Il y a 2 jours</div>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
