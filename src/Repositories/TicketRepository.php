@@ -47,7 +47,7 @@ final class TicketRepository implements TicketRepositoryInterface
 
     public function findById(int $id): ?Ticket
     {
-        $statement = $this->pdo->prepare($this->baseQuery() . ' WHERE id = :id');
+        $statement = $this->pdo->prepare($this->baseQuery() . ' WHERE t.id = :id');
         $statement->execute(['id' => $id]);
         $row = $statement->fetch();
 
@@ -136,6 +136,19 @@ final class TicketRepository implements TicketRepositoryInterface
     }
 
     /** @return list<Ticket> */
+    public function findAll(): array
+    {
+        $statement = $this->pdo->prepare($this->baseQuery() . ' ORDER BY t.created_at DESC');
+        $statement->execute();
+        $rows = $statement->fetchAll();
+
+        return array_map(
+            static fn (array $row): Ticket => Ticket::fromDatabaseRow($row),
+            $rows
+        );
+    }
+
+    /** @return list<Ticket> */
     public function findRecentForUser(int $userId, int $limit = 5): array
     {
         $query = $this->baseQuery() . ' WHERE t.client_id = :user_id OR t.agent_id = :user_id ORDER BY t.updated_at DESC LIMIT :limit';
@@ -191,7 +204,7 @@ final class TicketRepository implements TicketRepositoryInterface
     private function findMany(string $column, int $userId): array
     {
         $statement = $this->pdo->prepare(
-            $this->baseQuery() . " WHERE {$column} = :user_id ORDER BY created_at DESC"
+            $this->baseQuery() . " WHERE t.{$column} = :user_id ORDER BY t.created_at DESC"
         );
         $statement->execute(['user_id' => $userId]);
         $rows = $statement->fetchAll();

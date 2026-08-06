@@ -5,14 +5,13 @@ declare(strict_types=1);
 // Vue de gestion des utilisateurs. Affiche un tableau utilisateur clair et
 // simple avec rôle et statut.
 
- $title = 'Utilisateurs';
- $pageTitle = 'Utilisateurs';
- $pageDescription = 'Liste des agents et administrateurs du système.';
+$title = 'Utilisateurs';
+$pageTitle = 'Utilisateurs';
+$pageDescription = 'Liste des agents et administrateurs du système.';
 
- $userRepo = new \App\Repositories\UserRepository();
- $users = $userRepo->findAll();
+/** @var list\App\Models\User $users */
 
- ob_start();
+ob_start();
  ?>
  <div class="card activity-card p-3">
      <div class="d-flex align-items-center justify-content-between mb-3">

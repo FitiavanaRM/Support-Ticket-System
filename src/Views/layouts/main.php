@@ -71,7 +71,7 @@ declare(strict_types=1);
                         <span id="themeToggleIcon" aria-hidden="true">☀️</span>
                         <span class="d-none d-sm-inline">Thème</span>
                     </button>
-                    <span class="text-muted d-none d-md-inline">Bonjour, utilisateur</span>
+                    <span class="text-muted d-none d-md-inline">Bonjour, <?= isset($currentUser) && method_exists($currentUser, 'name') ? htmlspecialchars($currentUser->name(), ENT_QUOTES, 'UTF-8') : 'utilisateur' ?></span>
                     <form action="/logout" method="post" class="m-0">
                         <button type="submit" class="btn btn-outline-secondary btn-sm">Déconnexion</button>
                     </form>
