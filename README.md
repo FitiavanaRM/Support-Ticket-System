@@ -72,3 +72,5 @@ Les données de seed créent plusieurs comptes de test :
 - agent@demo.test / Password123!
 - superviseur@demo.test / Password123!
 - admin@demo.test / Password123!
+
+Le client ne peut pas voir les listes des utilisateurs et l'assignement
