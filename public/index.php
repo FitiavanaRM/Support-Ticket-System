@@ -103,6 +103,28 @@ $router->post('/register', [AuthController::class, 'register']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->post('/logout', [AuthController::class, 'logout']);
 
+$router->get('/tickets/new', function (Request $request): Response {
+    (new AuthMiddleware(new Session()))->handle($request);
+
+    $session = new Session();
+    $userRepository = new UserRepository();
+    $currentUser = $userRepository->findById($session->userId() ?? 0);
+
+    $pdo = new PDO('mysql:host=' . Env::get('DB_HOST', '127.0.0.1') . ';port=' . Env::get('DB_PORT', '3306') . ';dbname=' . Env::get('DB_DATABASE', 'support_tickets') . ';charset=' . Env::get('DB_CHARSET', 'utf8mb4'), Env::get('DB_USERNAME', 'root'), Env::get('DB_PASSWORD', ''));
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name ASC')->fetchAll(PDO::FETCH_ASSOC);
+    $priorities = $pdo->query('SELECT id, name FROM priorities ORDER BY name ASC')->fetchAll(PDO::FETCH_ASSOC);
+
+    return Response::html(View::render(__DIR__ . '/../src/Views/tickets/new.php', [
+        'currentUser' => $currentUser,
+        'categories' => $categories,
+        'priorities' => $priorities,
+        'errors' => [],
+        'old' => [],
+    ]));
+});
+
 $router->post('/tickets', function (Request $request): Response {
     (new AuthMiddleware(new Session()))->handle($request);
     return (new TicketController())->create($request);
@@ -122,6 +144,8 @@ $router->get('/tickets', function (Request $request): Response {
         $userRepository = new UserRepository();
         $currentUser = $userRepository->findById($session->userId() ?? 0);
         $tickets = $ticketRepository->findRecentForUser($session->userId() ?? 0, 25);
+        $flashMessage = $_SESSION['flash_message'] ?? null;
+        unset($_SESSION['flash_message']);
 
         $agentIds = array_unique(array_filter(array_map(
             static fn ($ticket) => $ticket->agentId(),
@@ -139,6 +163,7 @@ $router->get('/tickets', function (Request $request): Response {
             'currentUser' => $currentUser,
             'tickets' => $tickets,
             'ticketAgentNames' => $ticketAgentNames,
+            'flashMessage' => $flashMessage,
         ]));
     }
 

@@ -151,9 +151,10 @@ final class TicketRepository implements TicketRepositoryInterface
     /** @return list<Ticket> */
     public function findRecentForUser(int $userId, int $limit = 5): array
     {
-        $query = $this->baseQuery() . ' WHERE t.client_id = :user_id OR t.agent_id = :user_id ORDER BY t.updated_at DESC LIMIT :limit';
+        $query = $this->baseQuery() . ' WHERE t.client_id = :user_id_1 OR t.agent_id = :user_id_2 ORDER BY t.updated_at DESC LIMIT :limit';
         $statement = $this->pdo->prepare($query);
-        $statement->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $statement->bindValue(':user_id_1', $userId, PDO::PARAM_INT);
+        $statement->bindValue(':user_id_2', $userId, PDO::PARAM_INT);
         $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
         $statement->execute();
         $rows = $statement->fetchAll();
@@ -176,7 +177,7 @@ final class TicketRepository implements TicketRepositoryInterface
                  SUM(t.status = :resolved) AS resolved,
                  SUM(t.status = :closed) AS closed
              FROM tickets t
-             WHERE t.client_id = :user_id OR t.agent_id = :user_id'
+             WHERE t.client_id = :user_id_1 OR t.agent_id = :user_id_2'
         );
 
         $statement->execute([
@@ -185,7 +186,8 @@ final class TicketRepository implements TicketRepositoryInterface
             'in_progress' => Ticket::STATUS_IN_PROGRESS,
             'resolved' => Ticket::STATUS_RESOLVED,
             'closed' => Ticket::STATUS_CLOSED,
-            'user_id' => $userId,
+            'user_id_1' => $userId,
+            'user_id_2' => $userId,
         ]);
 
         $counts = $statement->fetch();

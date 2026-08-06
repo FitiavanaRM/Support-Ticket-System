@@ -39,6 +39,12 @@ final class TicketController
             $this->authenticatedUserId(),
         );
 
+        if ($request->acceptsHtml()) {
+            $session = new Session();
+            $_SESSION['flash_message'] = 'Ticket créé avec succès.';
+            return Response::redirect('/tickets');
+        }
+
         return Response::json([
             'status' => 'success',
             'data' => $ticket->toArray(),

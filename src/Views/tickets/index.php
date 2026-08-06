@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Models\Ticket;
-use App\Repositories\UserRepository;
 
 // Vue pour la liste des tickets. Affiche un tableau Bootstrap moderne avec des
 // badges de statut et de priorité.
@@ -13,9 +12,8 @@ $pageTitle = 'Tickets';
 $pageDescription = 'Liste complète des demandes de support et leur état actuel.';
 
 /** @var list<Ticket> $tickets */
+/** @var array<int, string> $ticketAgentNames */
 /** @var \App\Models\User|null $currentUser */
-
-$ticketRepository = new UserRepository();
 
 function ticketStatusBadge(string $status): string
 {
@@ -37,27 +35,48 @@ ob_start();
             <i class="bi bi-ticket-detailed fs-4"></i>
             <h5 class="mb-0">Tickets</h5>
         </div>
-        <a href="/tickets" class="btn btn-primary btn-sm">Nouveau ticket</a>
+        <a href="/tickets/new" class="btn btn-primary btn-sm">Nouveau ticket</a>
     </div>
+
+    <?php if (!empty($flashMessage)): ?>
+        <div class="alert alert-success mb-3"><?= htmlspecialchars((string) $flashMessage, ENT_QUOTES, 'UTF-8') ?></div>
+    <?php endif; ?>
 
     <?php if (empty($tickets)): ?>
         <div class="text-center text-muted py-5">Aucun ticket trouvé pour votre compte.</div>
     <?php else: ?>
-        <?php $userRepository = new UserRepository(); ?>
         <ul class="list-unstyled activity-list mb-0">
             <?php foreach ($tickets as $ticket): ?>
-                <?php $agentName = $ticket->agentId() !== null ? ($userRepository->findById($ticket->agentId())?->name() ?? 'Non assigné') : 'Non assigné'; ?>
+                <?php
+                $ticketId = null;
+                $ticketSubject = 'Ticket sans sujet';
+                $ticketStatus = Ticket::STATUS_OPEN;
+                $ticketCategory = null;
+                $ticketAgentId = null;
+
+                if (is_object($ticket) && $ticket instanceof Ticket) {
+                    $ticketId = $ticket->id();
+                    $ticketSubject = $ticket->subject();
+                    $ticketStatus = $ticket->status();
+                    $ticketCategory = $ticket->categoryName();
+                    $ticketAgentId = $ticket->agentId();
+                }
+
+                $agentName = $ticketAgentId !== null && isset($ticketAgentNames) && is_array($ticketAgentNames)
+                    ? ($ticketAgentNames[$ticketAgentId] ?? 'Non assigné')
+                    : 'Non assigné';
+                ?>
                 <li class="activity-item d-flex align-items-center justify-content-between py-3">
                     <div class="d-flex align-items-center gap-3">
                         <div class="act-icon act-icon--created d-flex align-items-center justify-content-center">
                             <i class="bi bi-ticket-fill"></i>
                         </div>
                         <div class="activity-body">
-                            <div class="activity-title fw-bold">#<?= htmlspecialchars((string) $ticket->id(), ENT_QUOTES, 'UTF-8') ?> — <?= htmlspecialchars($ticket->subject(), ENT_QUOTES, 'UTF-8') ?></div>
-                            <div class="activity-desc text-muted small"><?= htmlspecialchars($agentName, ENT_QUOTES, 'UTF-8') ?> • <?= htmlspecialchars($ticket->categoryName() ?? 'Catégorie inconnue', ENT_QUOTES, 'UTF-8') ?></div>
+                            <div class="activity-title fw-bold">#<?= htmlspecialchars((string) $ticketId, ENT_QUOTES, 'UTF-8') ?> — <?= htmlspecialchars($ticketSubject, ENT_QUOTES, 'UTF-8') ?></div>
+                            <div class="activity-desc text-muted small"><?= htmlspecialchars($agentName, ENT_QUOTES, 'UTF-8') ?> • <?= htmlspecialchars($ticketCategory ?? 'Catégorie inconnue', ENT_QUOTES, 'UTF-8') ?></div>
                         </div>
                     </div>
-                    <div class="activity-time text-muted small"><?= $ticketStatusBadge($ticket->status()) ?></div>
+                    <div class="activity-time text-muted small"><?= ticketStatusBadge($ticketStatus) ?></div>
                 </li>
             <?php endforeach; ?>
         </ul>

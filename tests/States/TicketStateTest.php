@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Vérifie la cohérence de la machine à états du ticket.
- *
  * Cette couche est essentielle car les transitions de statut conditionnent la
  * validité des opérations métier et empêchent les états incohérents dans le cycle
  * de vie d'un ticket de support.
